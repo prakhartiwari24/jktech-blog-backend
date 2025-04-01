@@ -24,6 +24,7 @@ npm install
 
 npm run start:dev
 
+```bash
 Create a .env file in the root
 MONGO_URI=
 JWT_SECRET=
@@ -31,7 +32,9 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 FACEBOOK_CLIENT_ID=
 FACEBOOK_CLIENT_SECRET=
+```
 
+```bash
 GET /health – Health API
 
 GET /auth/google – Start Google OAuth
@@ -51,21 +54,22 @@ POST /posts - Create a New Post
 GET /posts - GET all Posts
 
 GET /posts/:id - GET POST by ID
-
+```
+```bash
 Testing
 This backend uses Jest for writing and running unit test cases.
-
 npm run test
 
 Test Data (Seeder)
 npx ts-node src/seed.ts
-
+```
+```bash
 Docker Setup
 docker build -t jktech-blog-backend .
 
 RUN Container
 docker run -p 5002:5002 --env-file .env jktech-blog-backend
-
+```
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
