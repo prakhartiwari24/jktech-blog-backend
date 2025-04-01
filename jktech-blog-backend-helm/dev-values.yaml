@@ -1,0 +1,41 @@
+App:
+  Name: nest-jktech-service
+  Image: CONTAINER_IMAGE #this will be chnaged via pipeline so comment it , if pipeline is not available
+  MinReplicas: 1
+  MaxReplicas: 10
+  ingressPort: 5002
+  containerPort: 5002
+  targetCPUUtilizationPercentage: 80
+  CpuRequest: 1
+  MemRequest: 1Gi
+  CpuLimit: 2
+  MemLimit: 2Gi
+  replicas: 1
+
+ingress:
+  enabled: true
+  apiVersion: networking.k8s.io/v1
+  annotations:
+    kubernetes.io/ingress.class: "alb"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/tags: nest-jktech-service=true
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: jktech-eks-stag
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:324649235192:certificate/16b1088e-5aaf-4c85-b85a-7c591e926ae2
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/target-group-attributes: stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=60
+    alb.ingress.kubernetes.io/load-balancer-attributes: deletion_protection.enabled=true
+    alb.ingress.kubernetes.io/load-balancer-attributes: routing.http2.enabled=true
+    alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=30
+    alb.ingress.kubernetes.io/success-codes: 200,302,301,404
+
+  hosts:
+    - host: nest-jktech-service.stag.jktech.com
+      paths:
+        - path: '/'
+          port: 5002
+
+env:
+  ENV_APPL: 'staging'

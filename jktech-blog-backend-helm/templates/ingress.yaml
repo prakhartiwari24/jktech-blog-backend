@@ -1,0 +1,41 @@
+---
+{{- if .Values.ingress.enabled -}}
+{{- $svcPort := .Values.ingressPort -}}
+{{- $AppName := .Values.App.Name -}}
+apiVersion: {{ .Values.ingress.apiVersion}}  #extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.App.Name }}
+  labels:
+    run: {{ .Values.App.Name }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.tls }}
+  tls:
+    {{- range .Values.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $AppName }}
+                port:
+                  number: {{ .port }}
+          {{- end }}
+    {{- end }}
+  {{- end }}

@@ -1,0 +1,44 @@
+App:
+  Name: nest-jktech-service
+  Image: CONTAINER_IMAGE #this will be chnaged via pipeline so comment it , if pipeline is not available
+  MinReplicas: 1
+  MaxReplicas: 10
+  ingressPort: 5002
+  containerPort: 5002
+  TargetCpuUtilisation: 80
+  CpuRequest: 1
+  MemRequest: 1Gi
+  CpuLimit: 2
+  MemLimit: 2Gi
+  replicas: 1
+
+ingress:
+  enabled: true
+  apiVersion: networking.k8s.io/v1
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: '1800'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '3600'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '3600'
+    nginx.ingress.kubernetes.io/enable-cors: 'true'
+    nginx.ingress.kubernetes.io/cors-allow-origin: '*'
+    nginx.ingress.kubernetes.io/cors-allow-methods: '*'
+    nginx.ingress.kubernetes.io/cors-allow-headers: DNT,X-CustomHeader,X-LANG,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,X-Api-Key,X-Device-Id,Access-Control-Allow-Origin,app-key,authorization
+    nginx.ingress.kubernetes.io/affinity: 'cookie'
+    nginx.ingress.kubernetes.io/session-cookie-name: 'nest-jktech-service'
+    nginx.ingress.kubernetes.io/session-cookie-expires: '172800'
+    nginx.ingress.kubernetes.io/session-cookie-max-age: '172800'
+    nginx.ingress.kubernetes.io/proxy-body-size: '100m'
+
+  hosts:
+    - host: nest-jktech-service.staging.jktech.com
+      paths:
+        - path: '/'
+          port: 5002
+
+  tls:
+    - hosts:
+        - nest-jktech-service.staging.jktech.com
+      secretName: 'nest-jktech-service.staging.jktech.com'
