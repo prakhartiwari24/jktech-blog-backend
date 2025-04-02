@@ -59,15 +59,14 @@ FACEBOOK_CLIENT_SECRET=your facebook client secret
 1) Go to Google Cloud Console. https://console.cloud.google.com/
 2) Create a project and enable the People API.
 3) Set up an OAuth consent screen (External).
-4) Create OAuth 2.0 credentials (Web Application) with redirect URI: http://localhost:3000/auth/google/redirect.
+4) Create OAuth 2.0 credentials (Web Application) with redirect URI: http://localhost:5002/auth/google/callback.
 5) Copy **GOOGLE_CLIENT_ID** and **GOOGLE_CLIENT_SECRET** to .env.
 
 ## Facebook OAuth Setup
 
-
 1) Go to Facebook Developer Portal. https://developers.facebook.com/
 2) Create an app and add Facebook Login product.
-3) Configure redirect URI: http://localhost:3000/auth/facebook/redirect.
+3) Configure redirect URI: http://localhost:5002/auth/facebook/callback.
 4) Copy **FACEBOOK_CLIENT_ID** and **FACEBOOK_CLIENT_SECRET** to .env.
 
 
