@@ -6,6 +6,7 @@ import {
   Res,
   Post,
   Body,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -28,7 +29,7 @@ export class AuthController {
   async googleAuthRedirect(@Req() req, @Res() res: Response) {
     const user = await this.authService.validateUser(req.user);
     const token = await this.authService.login(user);
-    return res.redirect(`http://localhost:3000/?token=${token.access_token}`);
+    return res.redirect(`http://localhost:4200/?token=${token.access_token}`);
   }
 
   @Post('facebook/callback')
@@ -59,6 +60,44 @@ export class AuthController {
     } catch (error) {
       console.error('Facebook login error:', error.message);
       throw error;
+    }
+  }
+
+  @Post('facebook')
+  async facebookOAuth(@Body('code') code: string) {
+    const appId = this.configService.get('FACEBOOK_CLIENT_ID');
+    const appSecret = this.configService.get('FACEBOOK_CLIENT_SECRET');
+    const redirectUri = 'http://localhost:4200/auth/callback';
+
+    try {
+      const tokenRes = await axios.get(
+        'https://graph.facebook.com/v19.0/oauth/access_token',
+        {
+          params: {
+            client_id: appId,
+            client_secret: appSecret,
+            redirect_uri: redirectUri,
+            code,
+          },
+        },
+      );
+
+      const { access_token } = tokenRes.data;
+      const profileRes = await axios.get(
+        'https://graph.facebook.com/me?fields=id,name,email',
+        { params: { access_token } },
+      );
+
+      const profile = profileRes.data;
+      const user = await this.authService.validateUser({
+        facebookId: profile.id,
+        email: profile.email,
+      });
+
+      return this.authService.login(user);
+    } catch (err) {
+      console.error('Facebook OAuth code exchange failed:', err.message);
+      throw new UnauthorizedException('Facebook login failed');
     }
   }
 }
